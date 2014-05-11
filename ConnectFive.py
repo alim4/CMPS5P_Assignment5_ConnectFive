@@ -11,24 +11,36 @@ def main():
     playerX = True
     playerO = False
 
-    myboard = [["_"]*9 for x in xrange(7)]
-    for i in myboard:
-        print ' '.join(i)
+    # Create the board
+    columns = 9
+    rows = 7
+    myboard = [["_"]*columns for x in xrange(rows)]
+    # for i in myboard:
+    #     print ' '.join(i)
 
-    myboard[2][3] = "adf"
-
-    print len(myboard)
     print_board(myboard)
 
     while True:
         if playerX:
             playerX_input = raw_input("Player X - Choose a column: ")
-            playerX = False
-            playerO = True
+            if 0 > int(playerX_input) > 8:
+                raise ValueError("Input must be between integers 0 and 8")
+            else:
+                place_piece("x", myboard, int(playerX_input))
+                scan_board(myboard)
+                print_board(myboard)
+                playerX = False
+                playerO = True
         if playerO:
             playerO_input = raw_input("Player O - Choose a column: ")
-            playerX = True
-            playerO = False
+            if 0 > int(playerO_input) > 8:
+                raise ValueError("Input must be between integers 0 and 8")
+            else:
+                place_piece("o", myboard, int(playerO_input))
+                scan_board(myboard)
+                print_board(myboard)
+                playerX = True
+                playerO = False
 
 def print_board(board):
     # print top row
@@ -43,7 +55,31 @@ def print_board(board):
             print board[x][y],
         print("")
 
-def place_piece(board, column):
+# Goes from bottom up of the board
+def place_piece(piece, board, column):
+    for i in range(len(board)-1, -1, -1):
+        if board[i][column] == "_":
+            board[i][column] = piece
+            break
+
+    return board
+
+def scan_board(board):
+    # Horizontal
+    for row in board:
+        print row
+        itor = 0
+        prev = ''
+        for val in row:
+            prev = val
+            
+            print val
+
+    # Vertical
+
+    # Diagonal Right
+
+    # Diagonal Left
     return
 
 main()
