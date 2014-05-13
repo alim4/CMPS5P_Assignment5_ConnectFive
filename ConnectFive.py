@@ -10,6 +10,11 @@ __author__ = 'anthonylim'
 #
 
 def main():
+
+    """
+    Main
+
+    """
     playerX = True
     playerO = False
 
@@ -47,6 +52,12 @@ def main():
                 playerO = False
 
 def get_input(player, num_tries):
+    """
+
+    :param player: x or o player
+    :param num_tries: number of times to try input
+    :return: input string
+    """
     itor = 0
     while itor < num_tries:
         input = raw_input("Player {0} - Choose a column: ".format(player))
@@ -65,6 +76,11 @@ def get_input(player, num_tries):
     return "skip"
 
 def print_board(board):
+    """
+
+    :param board: the connect five board
+    """
+    print ("")
     # print top row
     for i in range(9):
         print "{0}".format(i),
@@ -79,6 +95,13 @@ def print_board(board):
 
 # Goes from bottom up of the board
 def place_piece(piece, board, column):
+    """
+
+    :param piece: x or o player
+    :param board: the connect five board 2D array
+    :param column: column the player will be placing into
+    :return: the connect five board
+    """
     for i in range(len(board)-1, -1, -1):
         if board[i][column] == "_":
             board[i][column] = piece
@@ -87,6 +110,22 @@ def place_piece(piece, board, column):
     return board
 
 def scan_board(board):
+    """
+
+    :param board:
+    :return: nothing
+    This function scans the board and calls win_game
+    if a correct match is found
+    """
+
+    emptyfound = 0
+    for ele in board:
+        if ele.count("_") == 0:
+            emptyfound += 1
+
+    if emptyfound == 7:
+        win_game("NOBODY")
+
     letters = ["x", "o"]
 
     # For X and O
@@ -95,7 +134,7 @@ def scan_board(board):
         #print "Row"
         for row in board:
             if row.count(letter) >= 5:
-                if check("row", row, letter):
+                if check(row, letter):
                     win_game(letter)
             #print "{0} ~ {1}".format(row, row.count("x"))
 
@@ -104,43 +143,77 @@ def scan_board(board):
         for column in range(len(board)):
             col = [row[column] for row in board]
             if col.count(letter) >= 5:
-                if check("col", col, letter):
+                if check(col, letter):
                     win_game(letter)
             #print "{0} ~ {1}".format(col, col.count("x"))
 
+    newboard = []
+
     # Diagonal Right
-    for i in range(7):
-        for j in range(9):
-            for k in range(18):
-                if j == i-9+k:
-                    board[i][j] = chr(j+100).upper()
+    # Debugging
+    # for i in range(7):
+    #     for j in range(9):
+    #         for k in range(18):
+    #             if i == j-9+k:
+    #                 board[i][j] = (chr(j+110-i)).upper()
 
-
-    print print_board(board)
-
-
-    # col[0][0]
-    # col[0][1] [1][0]
-    # col[0][2] [1][1] [2][0]
-    # col[0][3] [1][2] [2][1] [3][0]
+    for j in range(1,18):
+        diag = [row[(i+j)-9] for i, row in enumerate(board) if 0 <= i+j-9 < len(row)]
+        newboard.append(diag)
 
     # Diagonal Left
+    # Debugging
+    # for i in range(7):
+    #     for j in range(9):
+    #         for k in range(18):
+    #             if i == j-9+k:
+    #                 try:
+    #                     board[i][8-j] = (chr(j+110-i)).upper()
+    #                 except IndexError:
+    #                     print "eh"
+
+    for j in range(1,18):
+        diag = [row[-i-j+18] for i, row in enumerate(board) if 0 <= -i-j+18 < len(row)]
+        newboard.append(diag)
+
+    # Process diagonals
+    for ele in newboard:
+        if len(ele) >= 5:
+            if check(ele, "x"):
+                win_game("X")
+            if check(ele, "o"):
+                win_game("O")
+
+    print_board(board)
+
     return
 
 def win_game(player):
+    """
+
+    :param player: x or o player
+    win the game
+    """
     print "Player {0} has won the game!".format(player.upper())
     sys.exit(0)
 
-def check(type, row, letter):
+def check(row, letter):
     # if itor is 5 for 5 consecutive
     # consider a successful match
+    """
+
+    :param row: list of characters to check
+    :param letter: x or o player
+    :return: boolean True or False
+    checks a row of at least length 5 for a connect five match
+    """
     itor = 0
     is_winner_found = False
 
-    if type == "row":
-        rangenum = 4
-    elif type == "col":
-        rangenum = 3
+    if len(row)-5 == 0:
+        rangenum = 1
+    else:
+        rangenum = len(row)-5
 
     for i in range(rangenum):
         for j in range(5):
